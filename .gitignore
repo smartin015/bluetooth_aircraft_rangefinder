@@ -1,1 +1,6 @@
 build/
+node_modules/
+dist/
+*/Thumbs.db
+www/
+npm-debug.log
