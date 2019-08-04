@@ -1,6 +1,11 @@
-# bluetooth_aircraft_rangefinder
+# BT Aircraft Rangefinder
 
-This is a rangefinder in two parts:
+This is code and docs on how to construct a landing rangefinder for an aircraft. The included app uses sensor readings from a TFMiniPlus IR time-of-flight sensor to measure
+the last 40 feet of altitude, then provides audio cues to the pilot to assist with landing.
+
+DISCLAIMER: There are no guarantees offered with the code or instruction in this repositor; use it at your own risk.
+
+The code is in two parts:
 
 1. ble_rangefinder: An ESP32-based BLE server that reads a distance sensor via UART
 1. BluetoothLEGatt: An android app that pairs with the device, reads its data, and reports it via screen and periodic voice command
@@ -21,4 +26,4 @@ services, characteristics, and descriptors.
 In order to receive messages, the android app first turns on its own notifications when there's BLE data for a particular characteristic, then it
 sends a message to the device (via its CCCD, or Client Configuration Characteristic Descriptor) asking it to send periodic notifications.
 
-Most of the business logic in the app lives in `DeviceControlActivity.java`
+Most of the business logic in the app lives in `DeviceControlActivity.java`.
