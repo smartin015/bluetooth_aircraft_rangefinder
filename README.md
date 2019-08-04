@@ -5,7 +5,7 @@
 This is code and docs on how to construct a landing rangefinder for an aircraft. The included app uses sensor readings from a TFMiniPlus IR time-of-flight sensor to measure
 the last 40 feet of altitude, then provides audio cues to the pilot to assist with landing.
 
-DISCLAIMER: There are no guarantees offered with the code or instruction in this repositor; use it at your own risk.
+**DISCLAIMER**: There are no guarantees offered with the code or instruction in this repository; use it at your own risk.
 
 The code is in two parts:
 
