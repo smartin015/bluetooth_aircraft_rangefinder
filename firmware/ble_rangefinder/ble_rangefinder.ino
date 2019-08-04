@@ -65,30 +65,20 @@ void setupBLE() {
 
   BLEService *pService = pServer->createService(SERVICE_UUID);
 
-  pDistCharacteristic = pService->createCharacteristic(
-                    CHARACTERISTIC_UUID_DIST,
-                    BLECharacteristic::PROPERTY_NOTIFY
-                  );
+  // Same CCCD is shared across all characteristics, so 
+  // notification enable/disable is also shared.
   pDistCCCD = new BLE2902();
+  pDistCharacteristic = pService->createCharacteristic(CHARACTERISTIC_UUID_DIST, BLECharacteristic::PROPERTY_NOTIFY);
   pDistCharacteristic->addDescriptor(pDistCCCD);
 
-  pFluxCharacteristic = pService->createCharacteristic(
-                       CHARACTERISTIC_UUID_FLUX,
-                      BLECharacteristic::PROPERTY_NOTIFY
-                    );
-  pFluxCharacteristic->addDescriptor(new BLE2902());
+  pFluxCharacteristic = pService->createCharacteristic(CHARACTERISTIC_UUID_FLUX, BLECharacteristic::PROPERTY_NOTIFY);
+  pFluxCharacteristic->addDescriptor(pDistCCCD);
                     
-  pTempCharacteristic = pService->createCharacteristic(
-                       CHARACTERISTIC_UUID_TEMP,
-                      BLECharacteristic::PROPERTY_NOTIFY
-                    );
-  pTempCharacteristic->addDescriptor(new BLE2902());
+  pTempCharacteristic = pService->createCharacteristic(CHARACTERISTIC_UUID_TEMP, BLECharacteristic::PROPERTY_NOTIFY);
+  pTempCharacteristic->addDescriptor(pDistCCCD);
 
-  pStatusCharacteristic = pService->createCharacteristic(
-                       CHARACTERISTIC_UUID_STATUS,
-                      BLECharacteristic::PROPERTY_NOTIFY
-                    );
-  pStatusCharacteristic->addDescriptor(new BLE2902());
+  pStatusCharacteristic = pService->createCharacteristic(CHARACTERISTIC_UUID_STATUS, BLECharacteristic::PROPERTY_NOTIFY);
+  pStatusCharacteristic->addDescriptor(pDistCCCD);
   pService->start();
 }
 
