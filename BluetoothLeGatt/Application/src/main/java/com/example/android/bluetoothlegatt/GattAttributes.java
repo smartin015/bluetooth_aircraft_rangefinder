@@ -21,7 +21,7 @@ import java.util.HashMap;
 /**
  * This class includes a small subset of standard GATT attributes for demonstration purposes.
  */
-public class SampleGattAttributes {
+public class GattAttributes {
     static final String LANDING_SENSOR_UUID = "24:0A:C4:9C:B7:FE";
     static final String LANDING_SENSOR_NAME = "Landing Sensor";
     private static HashMap<String, String> attributes = new HashMap();

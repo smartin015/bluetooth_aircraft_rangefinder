@@ -49,10 +49,6 @@ public class BluetoothLeService extends Service {
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
 
-    private static final int STATE_DISCONNECTED = 0;
-    private static final int STATE_CONNECTING = 1;
-    private static final int STATE_CONNECTED = 2;
-
     public final static String ACTION_GATT_CONNECTED =
             "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
     public final static String ACTION_GATT_DISCONNECTED =
@@ -69,9 +65,6 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.SENSOR_TEMP";
     public final static String SENSOR_STATUS =
             "com.example.bluetooth.le.SENSOR_STATUS";
-
-    public final static UUID UUID_UART_TX_CHARACTERISTIC=
-            UUID.fromString(SampleGattAttributes.SENSOR_DIST_CHARACTERISTIC);
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
@@ -129,30 +122,30 @@ public class BluetoothLeService extends Service {
         final Intent intent = new Intent(action);
         String uuid = characteristic.getUuid().toString();
         switch (uuid) {
-            case SampleGattAttributes.SENSOR_DIST_CHARACTERISTIC:
+            case GattAttributes.SENSOR_DIST_CHARACTERISTIC:
                 // Distance is in CM; convert to feet
                 double distance = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 0) * 0.0328084;
                 Log.d(TAG, String.format("Distance: %02f", distance));
                 intent.putExtra(SENSOR_DIST, distance);
                 break;
-            case SampleGattAttributes.SENSOR_FLUX_CHARACTERISTIC:
+            case GattAttributes.SENSOR_FLUX_CHARACTERISTIC:
                 int flux = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 0);
                 Log.d(TAG, String.format("Flux: %d", flux));
                 intent.putExtra(SENSOR_FLUX, flux);
                 break;
-            case SampleGattAttributes.SENSOR_TEMP_CHARACTERISTIC:
+            case GattAttributes.SENSOR_TEMP_CHARACTERISTIC:
                 // Temp is in 10th of C, convert to C
                 double temp = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, 0) / 10;
                 Log.d(TAG, String.format("Temp: %01f", temp));
                 intent.putExtra(SENSOR_TEMP, temp);
                 break;
-            case SampleGattAttributes.SENSOR_STATUS_CHARACTERISTIC:
+            case GattAttributes.SENSOR_STATUS_CHARACTERISTIC:
                 String status = characteristic.getStringValue(0);
                 Log.d(TAG, String.format("Status: %s", status));
                 intent.putExtra(SENSOR_STATUS, status);
                 break;
             default:
-                Log.w(TAG, String.format("Unhandled data from %s (%s)", uuid, SampleGattAttributes.lookup(uuid)));
+                Log.w(TAG, String.format("Unhandled data from %s (%s)", uuid, GattAttributes.lookup(uuid)));
         }
 
         sendBroadcast(intent);
@@ -305,7 +298,7 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
         BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
-                UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
+                UUID.fromString(GattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
         if (descriptor != null) {
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptor);

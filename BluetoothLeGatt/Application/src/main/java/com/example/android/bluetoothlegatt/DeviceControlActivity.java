@@ -62,9 +62,16 @@ public class DeviceControlActivity extends Activity implements OnInitListener {
     private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
     private boolean mConnected = false;
+    private Menu mMenu;
+
     private boolean mSpeechActive;
     private TextToSpeech mTTS;
-    private Menu mMenu;
+
+    // Keep track of prior sensor values
+    private double distance = 0;
+    private double temp = 0;
+    private int flux = 0;
+    private String status = "";
 
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -97,16 +104,6 @@ public class DeviceControlActivity extends Activity implements OnInitListener {
         }
     };
 
-    // Handles various events fired by the Service.
-    // ACTION_GATT_CONNECTED: connected to a GATT server.
-    // ACTION_GATT_DISCONNECTED: disconnected from a GATT server.
-    // ACTION_GATT_SERVICES_DISCOVERED: discovered GATT services.
-    // ACTION_DATA_AVAILABLE: received data from the device.  This can be a result of read
-    //                        or notification operations.
-    private double distance = 0;
-    private double temp = 0;
-    private int flux = 0;
-    private String status = "";
     private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
 
         @Override
@@ -170,10 +167,10 @@ public class DeviceControlActivity extends Activity implements OnInitListener {
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
 
         if (mDeviceName == null) {
-            mDeviceName = SampleGattAttributes.LANDING_SENSOR_NAME;
+            mDeviceName = GattAttributes.LANDING_SENSOR_NAME;
         }
         if (mDeviceAddress == null) {
-            mDeviceAddress = SampleGattAttributes.LANDING_SENSOR_UUID;
+            mDeviceAddress = GattAttributes.LANDING_SENSOR_UUID;
         }
 
         // Sets up UI references.
@@ -307,18 +304,18 @@ public class DeviceControlActivity extends Activity implements OnInitListener {
         }
     }
 
-    // Subscribes to all listed GATT services and characteristics in SampleGattAttributes.
+    // Subscribes to all listed GATT services and characteristics in GattAttributes.
     private void subscribeGattServices(List<BluetoothGattService> gattServices) {
         if (gattServices == null) return;
         for (BluetoothGattService gattService : gattServices) {
-            if (SampleGattAttributes.lookup(gattService.getUuid().toString()) == null) {
+            if (GattAttributes.lookup(gattService.getUuid().toString()) == null) {
                 Log.d(TAG, String.format("Skipping service %s", gattService.getUuid().toString()));
                 continue;
             }
             Log.d(TAG, String.format("Service has %d characteristics", gattService.getCharacteristics().size()));
             for (BluetoothGattCharacteristic gattCharacteristic : gattService.getCharacteristics()) {
                 String uuid = gattCharacteristic.getUuid().toString();
-                String name = SampleGattAttributes.lookup(uuid);
+                String name = GattAttributes.lookup(uuid);
                 if (name == null) {
                     Log.d(TAG, String.format("Skipping characteristic %s", uuid));
                     continue;
