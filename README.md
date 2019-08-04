@@ -1,3 +1,5 @@
+**STATUS: COMPLETE**
+
 # BT Aircraft Rangefinder
 
 This is code and docs on how to construct a landing rangefinder for an aircraft. The included app uses sensor readings from a TFMiniPlus IR time-of-flight sensor to measure
