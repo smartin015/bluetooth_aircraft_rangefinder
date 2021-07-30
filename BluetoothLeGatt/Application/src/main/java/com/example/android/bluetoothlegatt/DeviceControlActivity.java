@@ -97,8 +97,8 @@ public class DeviceControlActivity extends Activity implements OnInitListener {
     private Runnable mHandleSpeech = new Runnable() {
         @Override
         public void run() {
-            if (mSpeechActive) {
-                speak(String.format("%d feet", (int)distance));
+            if (mSpeechActive && distance > 30) {
+                speak(String.format("%d", (int)distance));
             }
             mSpeechHandler.postDelayed(this, 2000);
         }
