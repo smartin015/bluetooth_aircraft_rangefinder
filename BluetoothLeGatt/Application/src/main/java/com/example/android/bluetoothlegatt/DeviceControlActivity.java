@@ -31,6 +31,8 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
@@ -58,6 +60,7 @@ public class DeviceControlActivity extends Activity implements OnInitListener {
     private TextView mTempField;
     private TextView mFluxField;
     private TextView mStatusField;
+    private Button mTestButton;
     private String mDeviceName;
     private String mDeviceAddress;
     private BluetoothLeService mBluetoothLeService;
@@ -68,6 +71,10 @@ public class DeviceControlActivity extends Activity implements OnInitListener {
     private TextToSpeech mTTS;
 
     // Keep track of prior sensor values
+    public static final double DISTANCE_OFFSET = -1.77;
+    public static final double MAX_REPORTED_DISTANCE = 30.0;
+    public static final int DISTANCE_SENSITIVITY = 3;
+    private int lastReportedDistance = 0;
     private double distance = 0;
     private double temp = 0;
     private int flux = 0;
@@ -97,8 +104,11 @@ public class DeviceControlActivity extends Activity implements OnInitListener {
     private Runnable mHandleSpeech = new Runnable() {
         @Override
         public void run() {
-            if (mSpeechActive && distance > 30) {
-                speak(String.format("%d", (int)distance));
+            Log.d(TAG, "SpeechActive: " + mSpeechActive + ", distance: " + distance);
+            int normDist = Math.max(0, (int)(distance));
+            if (mSpeechActive && normDist < MAX_REPORTED_DISTANCE && Math.abs(normDist - lastReportedDistance) > DISTANCE_SENSITIVITY) {
+                speak(String.format("%d", normDist));
+                lastReportedDistance = normDist;
             }
             mSpeechHandler.postDelayed(this, 2000);
         }
@@ -122,7 +132,7 @@ public class DeviceControlActivity extends Activity implements OnInitListener {
                 // Show all the supported services and characteristics on the user interface.
                 subscribeGattServices(mBluetoothLeService.getSupportedGattServices());
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                distance = (intent.hasExtra(BluetoothLeService.SENSOR_DIST)) ? intent.getDoubleExtra(BluetoothLeService.SENSOR_DIST, 0) : distance;
+                distance = (intent.hasExtra(BluetoothLeService.SENSOR_DIST)) ? intent.getDoubleExtra(BluetoothLeService.SENSOR_DIST, 0) - DISTANCE_OFFSET: distance;
                 temp = (intent.hasExtra(BluetoothLeService.SENSOR_TEMP)) ? intent.getDoubleExtra(BluetoothLeService.SENSOR_TEMP, 0) : temp;
                 flux = (intent.hasExtra(BluetoothLeService.SENSOR_FLUX)) ? intent.getIntExtra(BluetoothLeService.SENSOR_FLUX, 0) : flux;
                 status = (intent.hasExtra(BluetoothLeService.SENSOR_STATUS)) ? intent.getStringExtra(BluetoothLeService.SENSOR_STATUS) : status;
@@ -185,6 +195,15 @@ public class DeviceControlActivity extends Activity implements OnInitListener {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
+        mTestButton = findViewById(R.id.test_height);
+        mTestButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                distance = Math.random() * 1.5 * MAX_REPORTED_DISTANCE;
+                Log.d(TAG, "Set distance to randomized " + distance);
+                mDistField.setText(String.format("%.2f ft", distance));
+            }
+        });
     }
 
     public void onInit(int initStatus) {
@@ -267,10 +286,12 @@ public class DeviceControlActivity extends Activity implements OnInitListener {
                 return true;
             case R.id.menu_speech_disable:
                 mSpeechActive = false;
+                speak("spoken distance disabled");
                 updateMenuState();
                 return true;
             case R.id.menu_speech_enable:
                 mSpeechActive = true;
+                speak("ready");
                 updateMenuState();
                 return true;
             case android.R.id.home:
