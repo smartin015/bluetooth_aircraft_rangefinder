@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="App Startup">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="switch_preference_start_with_voice_enabled"
+            android:title="Start app with speech enabled" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Distance Settings">
+
+        <EditTextPreference
+            android:defaultValue="1.0"
+            android:key="edit_text_preference_distance_offset"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Distance offset from ground (ft)" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Speech Settings">
+
+        <EditTextPreference
+            android:defaultValue="2"
+            android:key="edit_text_preference_distance_sensitivity"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Distance between spoken values" />
+        <EditTextPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="1"
+            android:key="edit_text_preference_speech_rate"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Speech rate (requires restart)" />
+        <EditTextPreference
+            android:defaultValue="30.0"
+            android:key="edit_text_preference_max_spoken_distance"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Max spoken distance" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="switch_preference_repeat_enabled"
+            android:title="Repeat current distance" />
+        <EditTextPreference
+            android:defaultValue="5.0"
+            android:key="edit_text_repeat_interval"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Repeat every (s)" />
+    </PreferenceCategory>
+</PreferenceScreen>
